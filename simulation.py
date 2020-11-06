@@ -21,21 +21,35 @@ from utility import random_direction, direction_to_vector
 
 
 class Simulation:
-    def __init__(self, wall_density):
+    def __init__(self, wall_density, movement_per_reinforcement):
         self.grid = Grid(25, 25)
         self.spawn_walls(wall_density)
         self.sides = [LEFT, RIGHT, UP, DOWN]
         self.winner = None
+        self.left_soldier_speed = 1
+        self.right_soldier_speed = 1
+        self.up_soldier_speed = 1
+        self.down_soldier_speed = 1
+        self.movement_per_reinforcement = int(movement_per_reinforcement)
 
     def update(self):
+        # process movement
+        # handle input for every reinforcement wave
         pass 
 
     def process_input(self):
         print("Reinforcements are arriving")
         left_soldier_density = float(input("LEFT: Enter soldier density in range (0, 0.5): "))
+        self.left_soldier_speed = float(input("LEFT: Enter forward speed in range (0, 4): "))
+
         right_soldier_density = float(input("RIGHT: Enter soldier density in range (0, 0.5): "))
+        self.right_soldier_speed = float(input("RIGHT: Enter forward speed in range (0, 4): "))
+
         up_soldier_density = float(input("UP: Enter soldier density in range (0, 0.5): "))
+        self.up_soldier_speed = float(input("UP: Enter forward speed in range (0, 4): "))
+
         down_soldier_density = float(input("DOWN: Enter soldier density in range (0, 0.5): "))
+        self.down_soldier_speed = float(input("DOWN: Enter forward speed in range (0, 4): "))
 
         self.spawn_soldiers(LEFT, left_soldier_density)
         self.spawn_spies(LEFT, 0.5 - left_soldier_density)
@@ -55,6 +69,8 @@ class Simulation:
             x = 0
 
             for _ in range(N):
+                if self.grid.spawn_area_full(side):
+                    break
                 y = randrange(0, self.grid.height)
                 while (x, y) in self.grid.occupied_vertices.keys():
                     y = randrange(0, self.grid.height)
@@ -65,6 +81,8 @@ class Simulation:
             x = self.grid.width - 1
 
             for _ in range(N):
+                if self.grid.spawn_area_full(side):
+                    break
                 y = randrange(0, self.grid.height)
                 while (x, y) in self.grid.occupied_vertices.keys():
                     y = randrange(0, self.grid.height)
@@ -75,6 +93,8 @@ class Simulation:
             y = 0
 
             for _ in range(N):
+                if self.grid.spawn_area_full(side):
+                    break
                 x = randrange(0, self.grid.width)
                 while (x, y) in self.grid.occupied_vertices.keys():
                     x = randrange(0, self.grid.width)
@@ -85,6 +105,8 @@ class Simulation:
             y = self.grid.height - 1
 
             for _ in range(N):
+                if self.grid.spawn_area_full(side):
+                    break
                 x = randrange(0, self.grid.width)
                 while (x, y) in self.grid.occupied_vertices.keys():
                     x = randrange(0, self.grid.width)
@@ -97,6 +119,8 @@ class Simulation:
             x = 0
 
             for _ in range(N):
+                if self.grid.spawn_area_full(side):
+                    break
                 y = randrange(0, self.grid.height)
                 while (x, y) in self.grid.occupied_vertices.keys():
                     y = randrange(0, self.grid.height)
@@ -107,6 +131,8 @@ class Simulation:
             x = self.grid.width - 1
 
             for _ in range(N):
+                if self.grid.spawn_area_full(side):
+                    break
                 y = randrange(0, self.grid.height)
                 while (x, y) in self.grid.occupied_vertices.keys():
                     y = randrange(0, self.grid.height)
@@ -117,6 +143,8 @@ class Simulation:
             y = 0
 
             for _ in range(N):
+                if self.grid.spawn_area_full(side):
+                    break
                 x = randrange(0, self.grid.width)
                 while (x, y) in self.grid.occupied_vertices.keys():
                     x = randrange(0, self.grid.width)
@@ -127,6 +155,8 @@ class Simulation:
             y = self.grid.height - 1
 
             for _ in range(N):
+                if self.grid.spawn_area_full(side):
+                    break
                 x = randrange(0, self.grid.width)
                 while (x, y) in self.grid.occupied_vertices.keys():
                     x = randrange(0, self.grid.width)
@@ -135,12 +165,13 @@ class Simulation:
 
     # 0 <= density <= 1
     def spawn_walls(self, density):
-        for x in range(self.grid.width):
-            for y in range(self.grid.height):
+        for x in range(4, self.grid.width - 4):
+            for y in range(4, self.grid.height - 4):
                 r = random()
                 if r < density:
                     self.__spawn_wall(x, y)
 
+    # 0 <= forward strength <= 4
     def move_soldiers(self, side, forward_strength):
         for position_and_vertex in [item for item in self.grid.soldiers.items() if item[1].value[1] == side]:
             position = position_and_vertex[0]
@@ -224,8 +255,10 @@ class Simulation:
                             turned_soldier = True
 
                     # check if there is a king at that position
+                    # if so, the side who found the king wins
                     elif is_king(unit_type):
-                        pass
+                        self.winner = side
+                        return
             
             if turned_soldier:
                 vertex_at_next_position.value[0] = soldier_symbol(side)
