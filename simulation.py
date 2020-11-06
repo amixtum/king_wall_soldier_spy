@@ -5,7 +5,6 @@
     Soldier vs Soldier: 50/50
     2 Soldier vs Spy: Turn Spy
     Spy vs Soldier: Turn Soldier
-    2 Spy vs Wall: Remove Wall
     Walls are impassable
 """
 
@@ -15,10 +14,8 @@ from random import choice
 from random import random
 
 from grid import Grid
-from mygraph import Graph, Vertex
-from mygraphalgs import search_for
-from symbols import *
-from sides import *
+from symbols import WALL, SPACE, is_soldier, is_spy, is_king, soldier_symbol, spy_symbol, king_symbol
+from sides import LEFT, RIGHT, UP, DOWN
 from neighborhood_vectors import adjacent_vectors_moore
 from utility import random_direction, direction_to_vector
 
@@ -27,9 +24,11 @@ class Simulation:
     def __init__(self, wall_density):
         self.grid = Grid(25, 25)
         self.spawn_walls(wall_density)
+        self.sides = [LEFT, RIGHT, UP, DOWN]
+        self.winner = None
 
     def update(self):
-        pass
+        pass 
 
     def process_input(self):
         print("Reinforcements are arriving")
@@ -185,14 +184,17 @@ class Simulation:
                     continue
 
                 vertex_at_next_position = self.grid.vertices[next_position]
+                unit_type = vertex_at_next_position.value[0]
+                unit_side = vertex_at_next_position.value[1]
+
                 enemy_soldiers_around_vertex = self.grid.enemy_soldiers_around_vertex(next_position[0], next_position[1], side)
 
                 # check if the move is valid. if it is, we're moving the spy, and continuing to the next one
-                if vertex_at_next_position[0] != WALL and not is_spy(vertex_at_next_position[0]) and vertex_at_next_position.value[1] != side:
+                if unit_type != WALL and not is_spy(unit_type) and unit_side != side:
                     valid_move = True
 
                     # check if the spy is interacting with a soldier
-                    if is_soldier(vertex_at_next_position[0]):
+                    if is_soldier(unit_type):
 
                         # turn the spy if there is more than one soldier around the soldier the spy is interacting with
                         if len(enemy_soldiers_around_vertex) >= 1:
@@ -220,6 +222,10 @@ class Simulation:
                         # turn the soldier if there are no adjacent soldiers around it
                         else:
                             turned_soldier = True
+
+                    # check if there is a king at that position
+                    elif is_king(unit_type):
+                        pass
             
             if turned_soldier:
                 vertex_at_next_position.value[0] = soldier_symbol(side)
