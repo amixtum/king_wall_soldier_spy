@@ -21,7 +21,7 @@ from utility import random_direction, direction_to_vector
 
 
 class Game:
-    def __init__(self, size, wall_density, outer_rim_of_walls, movement_per_reinforcement):
+    def __init__(self, size, wall_density, movement_per_reinforcement):
         self.grid = Grid(size, size)
         self.sides = [LEFT, RIGHT, UP, DOWN]
         self.winner = None
@@ -68,7 +68,7 @@ class Game:
             print(self)
 
             # prompt user input to continue
-            input("Press Enter/Return to continue")
+            # input("Press Enter/Return to continue")
 
             # process movement
             for _ in range(self.movement_per_reinforcement):
@@ -96,7 +96,6 @@ class Game:
     def spawn_soldiers(self, side, density):
         if self.grid.spawn_area_empty(side):
             self.soldiers_spawn_next = False
-            print(side + " has incoming reinforcements of soldiers")
             if side == LEFT:
                 N = int(density * self.grid.height)
                 x = 0
@@ -139,7 +138,6 @@ class Game:
                     self.__spawn_soldier(x, y, side)
 
     def spawn_spies(self, side, density):
-        print(side + " has incoming reinforcements of spies")
         if self.grid.spawn_area_empty(side):
             self.soldiers_spawn_next = True
             if side == LEFT:
@@ -216,7 +214,6 @@ class Game:
             valid_move = False
             turned_soldier = False
             turned_spy = False
-            turned_spy_affiliation = side
             max_attempts = 3
             attempts = 0
 
@@ -254,28 +251,9 @@ class Game:
                     # check if the spy is interacting with a soldier
                     if is_soldier(unit_type):
 
-                        # turn the spy if there is more than one soldier around the soldier the spy is interacting with
+                        # destroy the spy if there is more than one soldier around the soldier the spy is interacting with
                         if len(enemy_soldiers_around_vertex) >= 1:
                             turned_spy = True
-                            winners = []
-
-                            left_side_count = len([s for s in enemy_soldiers_around_vertex if s.value[1] == LEFT])
-                            right_side_count = len([s for s in enemy_soldiers_around_vertex if s.value[1] == RIGHT])
-                            up_side_count = len([s for s in enemy_soldiers_around_vertex if s.value[1] == UP])
-                            down_side_count = len([s for s in enemy_soldiers_around_vertex if s.value[1] == DOWN])
-
-                            side_counter = [left_side_count, right_side_count, up_side_count, down_side_count]
-
-                            if side != LEFT and max(side_counter) == left_side_count:
-                                winners.append(LEFT)
-                            if side != RIGHT and max(side_counter) == right_side_count:
-                                winners.append(RIGHT)
-                            if side != UP and max(side_counter) == up_side_count:
-                                winners.append(UP)
-                            if side != DOWN and max(side_counter) == down_side_count:
-                                winners.append(DOWN)
-
-                            turned_spy_affiliation = choice(winners) 
 
                         # turn the soldier if there are no adjacent soldiers around it
                         else:
@@ -290,7 +268,7 @@ class Game:
             if turned_soldier:
                 vertex_at_next_position.value = (soldier_symbol(side), side)
             elif turned_spy:
-                position_and_vertex[1].value = (spy_symbol(turned_spy_affiliation), turned_spy_affiliation)
+                self.__destroy_spy(position[0], position[1])
             else:
                 self.__transfer_unit(position[0], position[1], direction)
                 self.grid.spies.pop((position[0], position[1]))

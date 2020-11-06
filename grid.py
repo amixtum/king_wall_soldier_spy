@@ -5,7 +5,7 @@
 """
 
 from vertex import Vertex
-from symbols import SPACE, is_soldier, king_symbol
+from symbols import SPACE, WALL, is_soldier, king_symbol
 from sides import *
 from neighborhood_vectors import adjacent_vectors_moore, adjacent_vectors_neumann
 
@@ -46,10 +46,10 @@ class Grid:
             return [s for s in self.spies if s.value[1] == DOWN]
 
     def enemy_soldiers_around_vertex(self, x, y, side):
-        return [v for v in self.adjacent_vertices_moore(x, y) if v.value[1] != side and is_soldier(v.value[0])]
+        return [v for v in self.adjacent_vertices_neumann(x, y) if v.value[1] != side and is_soldier(v.value[0])]
 
     def friendly_soldiers_around_vertex(self, x, y, side):
-        return [v for v in self.adjacent_vertices_moore(x, y) if v.value[1] == side and is_soldier(v.value[0])]
+        return [v for v in self.adjacent_vertices_neumann(x, y) if v.value[1] == side and is_soldier(v.value[0])]
 
     def adjacent_vertices_moore(self, x, y):
         adjacent = adjacent_vectors_moore(x, y, self.width, self.height)
@@ -73,22 +73,22 @@ class Grid:
         if side == LEFT:
             for y in range(1, self.height - 1):
                 unit_here = self.vertices[(0, y)].value[0]
-                if unit_here != SPACE and unit_here != king_symbol(side):
+                if unit_here != SPACE and unit_here != king_symbol(side) and unit_here != WALL:
                     return False
         elif side == RIGHT:
             for y in range(1, self.height - 1):
                 unit_here = self.vertices[(self.width - 1, y)].value[0]
-                if unit_here != SPACE and unit_here != king_symbol(side):
+                if unit_here != SPACE and unit_here != king_symbol(side) and unit_here != WALL:
                     return False
         elif side == UP:
             for x in range(1, self.width - 1):
                 unit_here = self.vertices[(x, 0)].value[0]
-                if unit_here != SPACE and unit_here != king_symbol(side):
+                if unit_here != SPACE and unit_here != king_symbol(side) and unit_here != WALL:
                     return False
         elif side == DOWN:
             for x in range(1, self.width - 1):
                 unit_here = self.vertices[(x, self.height - 1)].value[0]
-                if unit_here != SPACE and unit_here != king_symbol(side):
+                if unit_here != SPACE and unit_here != king_symbol(side) and unit_here != WALL:
                     return False
         return True
 
