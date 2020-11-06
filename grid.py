@@ -5,7 +5,7 @@
 """
 
 from vertex import Vertex
-from symbols import SPACE, is_soldier
+from symbols import SPACE, is_soldier, king_symbol
 from sides import *
 from neighborhood_vectors import adjacent_vectors_moore, adjacent_vectors_neumann
 
@@ -68,6 +68,29 @@ class Grid:
             vs.append(self.vertices[vector])
 
         return vs
+
+    def spawn_area_empty(self, side):
+        if side == LEFT:
+            for y in range(1, self.height - 1):
+                unit_here = self.vertices[(0, y)].value[0]
+                if unit_here != SPACE and unit_here != king_symbol(side):
+                    return False
+        elif side == RIGHT:
+            for y in range(1, self.height - 1):
+                unit_here = self.vertices[(self.width - 1, y)].value[0]
+                if unit_here != SPACE and unit_here != king_symbol(side):
+                    return False
+        elif side == UP:
+            for x in range(1, self.width - 1):
+                unit_here = self.vertices[(x, 0)].value[0]
+                if unit_here != SPACE and unit_here != king_symbol(side):
+                    return False
+        elif side == DOWN:
+            for x in range(1, self.width - 1):
+                unit_here = self.vertices[(x, self.height - 1)].value[0]
+                if unit_here != SPACE and unit_here != king_symbol(side):
+                    return False
+        return True
 
     def spawn_area_full(self, side):
         if side == LEFT:

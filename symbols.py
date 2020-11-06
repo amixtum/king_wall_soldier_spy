@@ -65,10 +65,10 @@ def spy_symbol(side):
 
 def king_symbol(side):
     if side == LEFT:
-        return LEFT_SPY
+        return LEFT_KING
     elif side == RIGHT:
-        return RIGHT_SPY
+        return RIGHT_KING
     elif side == UP:
-        return UP_SPY
+        return UP_KING
     elif side == DOWN:
-        return DOWN_SPY
+        return DOWN_KING

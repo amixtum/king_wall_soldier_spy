@@ -5,7 +5,7 @@
 """
 
 
-from random import randrange
+from random import random
 from sides import *
 
 
@@ -15,7 +15,7 @@ def random_direction(l_weight=1, r_weight=1, u_weight=1, d_weight=1):
     u_part = 25 * u_weight
     d_part = 25 * d_weight
 
-    r = randrange(0, l_part + r_part + u_part + d_part)
+    r = random() * (l_part + r_part + u_part + d_part)
 
     if r <= l_part:
         return LEFT
