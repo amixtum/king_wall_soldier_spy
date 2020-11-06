@@ -26,30 +26,39 @@ class Simulation:
         self.spawn_walls(wall_density)
         self.sides = [LEFT, RIGHT, UP, DOWN]
         self.winner = None
-        self.left_soldier_speed = 1
-        self.right_soldier_speed = 1
-        self.up_soldier_speed = 1
-        self.down_soldier_speed = 1
+        self.left_forward_speed = 1
+        self.right_forward_speed = 1
+        self.up_forward_speed = 1
+        self.down_forward_speed = 1
         self.movement_per_reinforcement = int(movement_per_reinforcement)
 
     def update(self):
-        # process movement
-        # handle input for every reinforcement wave
-        pass 
+        while self.winner is None:
+            # handle input for every reinforcement wave
+            self.process_input()
+            # process movement
+            for _ in range(self.movement_per_reinforcement):
+                # randomly choose which side moves their soldiers
+                next_side = choice(self.sides)
+                self.move_soldiers(next_side, self.__forward_strength(next_side))
+
+                # randomly choose which side moves their spies
+                next_side = choice(self.sides)
+                self.move_spies(next_side, self.__forward_strength(next_side))
 
     def process_input(self):
         print("Reinforcements are arriving")
         left_soldier_density = float(input("LEFT: Enter soldier density in range (0, 0.5): "))
-        self.left_soldier_speed = float(input("LEFT: Enter forward speed in range (0, 4): "))
+        self.left_forward_speed = float(input("LEFT: Enter forward speed in range (0, 4): "))
 
         right_soldier_density = float(input("RIGHT: Enter soldier density in range (0, 0.5): "))
-        self.right_soldier_speed = float(input("RIGHT: Enter forward speed in range (0, 4): "))
+        self.right_forward_speed = float(input("RIGHT: Enter forward speed in range (0, 4): "))
 
         up_soldier_density = float(input("UP: Enter soldier density in range (0, 0.5): "))
-        self.up_soldier_speed = float(input("UP: Enter forward speed in range (0, 4): "))
+        self.up_forward_speed = float(input("UP: Enter forward speed in range (0, 4): "))
 
         down_soldier_density = float(input("DOWN: Enter soldier density in range (0, 0.5): "))
-        self.down_soldier_speed = float(input("DOWN: Enter forward speed in range (0, 4): "))
+        self.down_forward_speed = float(input("DOWN: Enter forward speed in range (0, 4): "))
 
         self.spawn_soldiers(LEFT, left_soldier_density)
         self.spawn_spies(LEFT, 0.5 - left_soldier_density)
@@ -346,4 +355,15 @@ class Simulation:
         if from_vertex.previsit is not None:
             to_vertex.previsit = from_vertex.previsit
             from_vertex.previsit = None
+
+    def __forward_strength(self, side):
+        if side == LEFT:
+            return self.left_forward_speed
+        elif side == RIGHT:
+            return self.right_forward_speed
+        elif side == UP:
+            return self.up_forward_speed
+        elif side == DOWN:
+            return self.down_forward_speed
+        return None
 
