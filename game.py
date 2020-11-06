@@ -21,9 +21,8 @@ from utility import random_direction, direction_to_vector
 
 
 class Game:
-    def __init__(self, size, wall_density, movement_per_reinforcement):
+    def __init__(self, size, wall_density, outer_rim_of_walls, movement_per_reinforcement):
         self.grid = Grid(size, size)
-        self.spawn_walls(wall_density)
         self.sides = [LEFT, RIGHT, UP, DOWN]
         self.winner = None
         self.left_forward_speed = 1
@@ -36,6 +35,9 @@ class Game:
         self.down_soldier_density = 0.25
         self.movement_per_reinforcement = int(movement_per_reinforcement)
         self.soldiers_spawn_next = True
+
+        self.spawn_walls(wall_density, 0)
+
 
     def play(self):
         self.left_soldier_density = float(input("LEFT: Enter soldier density in range (0, 0.5): "))
@@ -54,6 +56,7 @@ class Game:
         self.__spawn_king(self.grid.width - 1, int(self.grid.height / 2), RIGHT)
         self.__spawn_king(int(self.grid.width / 2), 0, UP)
         self.__spawn_king(int(self.grid.width / 2), self.grid.height - 1, DOWN)
+
 
         print(self)
 
@@ -181,9 +184,9 @@ class Game:
                     self.__spawn_spy(x, y, side)
 
     # 0 <= density <= 1
-    def spawn_walls(self, density):
-        for x in range(4, self.grid.width - 4):
-            for y in range(4, self.grid.height - 4):
+    def spawn_walls(self, density, outer_rim):
+        for x in range(outer_rim, self.grid.width - outer_rim):
+            for y in range(outer_rim, self.grid.height - outer_rim):
                 r = random()
                 if r < density:
                     self.__spawn_wall(x, y)
