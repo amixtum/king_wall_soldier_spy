@@ -347,6 +347,16 @@ class Game:
             else:
                 soldier.value = (unit_type, unit_side)
 
+    def __destroy_soldier(self, x, y):
+        self.grid.occupied_vertices.pop((x, y))
+        self.grid.soldiers.pop((x, y))
+        self.grid.vertices[(x, y)] = (SPACE, None)
+
+    def __destroy_spy(self, x, y):
+        self.grid.occupied_vertices.pop((x, y))
+        self.grid.spies.pop((x, y))
+        self.grid.vertices[(x, y)] = (SPACE, None)
+
     def __spawn_soldier(self, x, y, side):
         self.grid.vertices[(x, y)].value = (soldier_symbol(side), side)
         self.grid.soldiers[(x, y)] = (self.grid.vertices[(x, y)])
