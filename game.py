@@ -9,6 +9,7 @@
 """
 
 from time import sleep
+import sys
 
 from random import randrange
 from random import choice
@@ -22,8 +23,8 @@ from utility import random_direction, direction_to_vector
 
 
 class Game:
-    def __init__(self, size, wall_density, movement_per_reinforcement):
-        self.grid = Grid(size, size)
+    def __init__(self, width, height, wall_density, movement_per_reinforcement):
+        self.grid = Grid(width, height)
         self.sides = [LEFT, RIGHT, UP, DOWN]
         self.winner = None
         self.left_forward_speed = 1
@@ -73,6 +74,8 @@ class Game:
 
             # process movement
             sleep(0.05)
+
+            sys.stdout.flush()
             for _ in range(self.movement_per_reinforcement):
                     next_side = choice(self.sides)
                     self.move_soldiers(next_side, self.__forward_strength(next_side))
