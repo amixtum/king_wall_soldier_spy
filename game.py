@@ -8,6 +8,7 @@
     Walls are impassable
 """
 
+from time import sleep
 
 from random import randrange
 from random import choice
@@ -65,12 +66,13 @@ class Game:
             self.spawn_units()
 
             # display the state of the game
-            print(self)
+            print(self, end='\r')
 
             # prompt user input to continue
             # input("Press Enter/Return to continue")
 
             # process movement
+            sleep(0.05)
             for _ in range(self.movement_per_reinforcement):
                     next_side = choice(self.sides)
                     self.move_soldiers(next_side, self.__forward_strength(next_side))
@@ -328,12 +330,12 @@ class Game:
     def __destroy_soldier(self, x, y):
         self.grid.occupied_vertices.pop((x, y))
         self.grid.soldiers.pop((x, y))
-        self.grid.vertices[(x, y)] = (SPACE, None)
+        self.grid.vertices[(x, y)].value = (SPACE, None)
 
     def __destroy_spy(self, x, y):
         self.grid.occupied_vertices.pop((x, y))
         self.grid.spies.pop((x, y))
-        self.grid.vertices[(x, y)] = (SPACE, None)
+        self.grid.vertices[(x, y)].value = (SPACE, None)
 
     def __spawn_soldier(self, x, y, side):
         self.grid.vertices[(x, y)].value = (soldier_symbol(side), side)
